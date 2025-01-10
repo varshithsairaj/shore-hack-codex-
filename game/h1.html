@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveller Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #1d2671, #c33764);
+            font-family: Arial, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            justify-content: center;
+        }
+    
+        #narration {
+            width: 80%;
+            text-align: center;
+            font-size: 20px;
+            color: #f1f1f1;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+            box-sizing: border-box;
+        }
+    
+        #game-container {
+            position: relative;
+            width: 500px;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 50px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+    
+        .path {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+        }
+    
+        .upper-path {
+            top: 0;
+            background: linear-gradient(180deg, #34c759, #28a745);
+        }
+    
+        .lower-path {
+            bottom: 0;
+            background: linear-gradient(180deg, #ff6b6b, #d7263d);
+        }
+    
+        #traveller {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffffff 50%, #000000 100%);
+            border-radius: 50%;
+            top: 40%;
+            left: 10%;
+            transition: top 0.6s, left 0.6s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+    
+        #options {
+            margin-top: 20px;
+            text-align: center;
+        }
+    
+        button.option-button {
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s, transform 0.2s;
+        }
+    
+        button.option-button:hover {
+            background: linear-gradient(45deg, #0056b3, #003d80);
+            transform: scale(1.05);
+        }
+    
+        #score {
+            font-size: 22px;
+            margin-top: 10px;
+            color: #f1f1f1;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+    
+        #end-message {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ffcc33;
+            margin-top: 20px;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+    
+        #start-game {
+            padding: 12px 25px;
+            margin: 20px 0;
+            border: none;
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+    
+        #start-game:hover {
+            background: linear-gradient(45deg, #218838, #1e7e34);
+            transform: scale(1.05);
+        }
+    
+        #start-game:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <div id="narration">Our journey begins with you, the Traveller, setting foot in a world full of promise. But the choices you make will determine the fate of this planet. Choose wisely, young adventurer!</div>
+    <div id="game-container">
+        <div class="path upper-path"></div>
+        <div class="path lower-path"></div>
+        <div id="traveller"></div>
+    </div>
+    <div id="options">
+        <button class="option-button" id="option1" onclick="makeChoice(1)" disabled>Option 1</button>
+        <button class="option-button" id="option2" onclick="makeChoice(2)" disabled>Option 2</button>
+    </div>
+    <div id="score">Score: 0</div>
+    <button id="start-game" onclick="startGame()">Start Game</button>
+
+    <div id="end-message"></div>
+
+    <script>
+let currentQuestion = 0;
+let score = 0;
+let totalQuestions = 6; // Game will end after 6 questions
+let traveller = document.getElementById("traveller");
+let scoreDisplay = document.getElementById("score");
+let options = document.querySelectorAll(".option-button");
+let startButton = document.getElementById("start-game");
+let endMessage = document.getElementById("end-message");
+let narration = document.getElementById("narration");
+let gameContainer = document.getElementById("game-container");
+
+// Set of questions and options
+const questions = [
+    { "q": "You see trash scattered around a park. What should you do?", "a1": "Leave it", "a2": "Pick it up", "correct": 2 },
+    { "q": "You notice a river near your house is full of plastic bottles. What can you do?", "a1": "Ignore it", "a2": "Clean the river", "correct": 2 },
+    { "q": "What should you do if you see someone cutting down trees in a forest?", "a1": "Tell them stop", "a2": "Ignore it", "correct": 1 },
+    { "q": "How can you save water at home?", "a1": "Take long showers", "a2": "Turn off tap", "correct": 2 },
+    { "q": "Why is it important to plant trees?", "a1": "Give oxygen", "a2": "Look nice", "correct": 1 },
+    { "q": "What is the best way to reduce your plastic waste?", "a1": "Reusable bags", "a2": "Buy plastic", "correct": 1 },
+    { "q": "How can you reduce your carbon footprint?", "a1": "Walk or bike", "a2": "Use car", "correct": 1 },
+    { "q": "Why should we recycle?", "a1": "Reduce waste", "a2": "Too much effort", "correct": 1 },
+    { "q": "What’s a good alternative to using plastic straws?", "a1": "Paper straws", "a2": "Plastic straws", "correct": 1 },
+    { "q": "Why is it important to conserve forests?", "a1": "Clean air", "a2": "Cutting trees", "correct": 1 },
+    { "q": "What’s a good way to reduce food waste?", "a1": "Buy only needed", "a2": "Buy more food", "correct": 1 },
+    { "q": "Why should we care about the air quality?", "a1": "Harm health", "a2": "No problem", "correct": 1 },
+    { "q": "What should you do if you see someone littering in your neighborhood?", "a1": "Ignore it", "a2": "Ask them to stop", "correct": 2 },
+    { "q": "How can you help save energy at home?", "a1": "Keep lights on all day", "a2": "Turn off lights when not in use", "correct": 2 },
+    { "q": "What’s a good way to protect wildlife?", "a1": "Destroy their habitats", "a2": "Preserve their homes", "correct": 2 },
+    { "q": "What is a renewable energy source?", "a1": "Fossil fuels", "a2": "Solar power", "correct": 2 },
+    { "q": "Why is it important to reduce plastic use?", "a1": "It pollutes the environment", "a2": "Plastic is cheap", "correct": 1 },
+    { "q": "What’s the best way to dispose of batteries?", "a1": "Throw them in the trash", "a2": "Recycle them", "correct": 2 },
+    { "q": "What’s a simple way to reduce paper waste?", "a1": "Print everything", "a2": "Go digital", "correct": 2 },
+    { "q": "Why should we avoid wasting food?", "a1": "To save money", "a2": "To help the environment", "correct": 2 },
+    { "q": "How can we support sustainable farming?", "a1": "Buy local produce", "a2": "Buy imported food", "correct": 1 },
+    { "q": "What should you do if you see a plastic bag stuck in a tree?", "a1": "Leave it", "a2": "Remove it", "correct": 2 }
+];
+
+// Function to shuffle questions randomly
+function shuffleQuestions() {
+    for (let i = questions.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]]; // Swap elements
+    }
+}
+
+function startGame() {
+    shuffleQuestions(); // Shuffle questions before starting
+    currentQuestion = 0;
+    score = 0;
+    traveller.style.top = "40%";
+    traveller.style.left = "10%";
+    endMessage.textContent = "";
+    scoreDisplay.textContent = "Score: " + score;
+    narration.textContent = "Our journey begins! Make the right choices and let's save the planet!";
+    startButton.style.display = "none";
+    options.forEach(option => option.disabled = false); // Enable options
+    nextQuestion();
+}
+
+function nextQuestion() {
+    if (currentQuestion < totalQuestions) {
+        let question = questions[currentQuestion];
+        narration.textContent = question.q;
+
+        options[0].textContent = question.a1;
+        options[1].textContent = question.a2;
+    } else {
+        endGame();
+    }
+}
+
+function makeChoice(choice) {
+    let correctAnswer = questions[currentQuestion].correct;
+    if (choice === correctAnswer) {
+        score++;
+        scoreDisplay.textContent = "Score: " + score;
+        moveTraveller(true);
+    } else {
+        score--;
+        scoreDisplay.textContent = "Score: " + score;
+        moveTraveller(false);
+    }
+
+    currentQuestion++;
+    setTimeout(nextQuestion, 1000); // Move to next question after delay
+}
+
+function moveTraveller(isCorrect) {
+    let topPosition = parseInt(traveller.style.top);
+    let leftPosition = parseInt(traveller.style.left);
+
+    if (isCorrect) {
+        traveller.style.top = `${topPosition - 5}%`;  // Slower movement
+        traveller.style.left = `${leftPosition + 5}%`;
+    } else {
+        traveller.style.top = `${topPosition + 5}%`;  // Slower movement
+        traveller.style.left = `${leftPosition + 5}%`;
+    }
+}
+
+function endGame() {
+    endMessage.textContent = `Game Over! Final Score: ${score}`;
+    startButton.textContent = "Play Again";
+    startButton.style.display = "inline-block";
+    options.forEach(option => option.disabled = true); // Disable options after game ends
+}
+
+    </script>
+</body>
+</html>

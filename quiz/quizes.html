@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Dashboard</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #4CAF50, #81C784, #64B5F6);
+            color: #fff;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            overflow: hidden;
+        }
+    
+        /* Header Styling */
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+            animation: fadeIn 1s ease-out;
+        }
+    
+        /* Button Styling */
+        button {
+            background: linear-gradient(90deg, #2196F3, #64B5F6);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+    
+        button:hover {
+            background: linear-gradient(90deg, #1976D2, #42A5F5);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+    
+        button:active {
+            transform: translateY(2px) scale(1);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Smooth Animation for Fade-In Effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <h1>Welcome to the Quiz Dashboard</h1>
+    <button onclick="openQuiz('quiz1.html')">Quiz 1</button>
+    <button onclick="openQuiz('quiz2.html')">Quiz 2</button>
+    <button onclick="openQuiz('quiz3.html')">Quiz 3</button>
+
+    <script>
+        function openQuiz(quizFile) {
+            // Opens the quiz in the same window
+            window.location.href = quizFile;
+
+            // To open the quiz in a new tab, use the line below instead:
+            // window.open(quizFile, '_blank');
+        }
+    </script>
+</body>
+</html>
